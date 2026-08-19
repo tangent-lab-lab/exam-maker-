@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>📝 阅卷管理 — {{ exam.title }}</h2>
+<a href="/teacher/dashboard" class="btn btn-sm btn-outline-secondary mb-3">← 返回仪表盘</a>
+
+{% if subs %}
+<table class="table table-bordered bg-white">
+  <thead><tr><th>学生</th><th>得分</th><th>满分</th><th>提交时间</th><th>操作</th></tr></thead>
+  <tbody>{% for s in subs %}
+    <tr>
+      <td>{{ s.student.real_name or s.student.username }}</td>
+      <td><strong>{{ s.score }}</strong></td>
+      <td>100</td>
+      <td>{{ s.submitted_at.strftime('%Y-%m-%d %H:%M') if s.submitted_at else '-' }}</td>
+      <td><a href="/teacher/exam/{{ exam.id }}/grade/{{ s.id }}" class="btn btn-sm btn-outline-primary">阅卷</a></td>
+    </tr>
+  {% endfor %}</tbody>
+</table>
+{% else %}<p>暂无学生提交。</p>{% endif %}
+{% endblock %}

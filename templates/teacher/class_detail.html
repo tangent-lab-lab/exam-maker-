@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>班级：{{ cls.name }}</h2>
+<a href="/teacher/classes" class="btn btn-sm btn-outline-secondary mb-3">← 返回班级列表</a>
+
+<div class="alert alert-info">
+  邀请码：<strong>{{ cls.invite_code }}</strong>
+  <span class="ms-3">描述：{{ cls.description or '-' }}</span>
+  <span class="ms-3">学生人数：{{ student_rows|length }}</span>
+</div>
+
+<h4>学生列表</h4>
+{% if student_rows %}
+<table class="table table-bordered bg-white">
+  <thead><tr><th>姓名</th><th>用户名</th><th>考试成绩</th></tr></thead>
+  <tbody>{% for st, subs in student_rows %}
+    <tr>
+      <td>{{ st.real_name or '-' }}</td>
+      <td>{{ st.username }}</td>
+      <td>
+        {% if subs %}
+          {% for s in subs %}
+            <div>{{ s.exam.title }}：<strong>{{ s.score }}</strong> 分
+              <small class="text-muted">({{ s.submitted_at.strftime('%m-%d %H:%M') if s.submitted_at else '-' }})</small></div>
+          {% endfor %}
+        {% else %}<span class="text-muted">暂无成绩</span>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}</tbody>
+</table>
+{% else %}<p>该班级暂无学生，请分享邀请码邀请学生加入。</p>{% endif %}
+{% endblock %}

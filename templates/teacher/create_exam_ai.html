@@ -1,39 +1,7 @@
-# Plan 007: 出卷表单页 — GET 路由 + 模板
-
-> **依赖**: Plan 006（POST 出卷路由已就绪）
-> **预估改动**: ~18 行（修改 app.py + 新建模板）
-
-## 对应 Spec 章节
-
-六、路由设计（GET /teacher/create_exam）/ 七、teacher/create_exam.html
-
-## 需要创建的文件
-
-1. `exam_maker/templates/teacher/create_exam.html`
-
-## 需要修改的文件
-
-1. `exam_maker/app.py` — 添加出卷表单 GET 路由
-
-## 改动步骤
-
-### Step 1: 在 `app.py` 中添加 GET 路由（放在出卷 POST 路由前面）
-
-```python
-@app.route("/teacher/create_exam", methods=["GET"])
-@login_required
-def create_exam_page():
-    if current_user.role != "teacher":
-        return redirect(url_for("student_dashboard"))
-    return render_template("teacher/create_exam.html")
-```
-
-### Step 2: 创建 `templates/teacher/create_exam.html`
-
-```html
 {% extends "base.html" %}
 {% block content %}
-<h2>AI 出卷</h2>
+<h2>🤖 AI 出卷</h2>
+<a href="/teacher/create_exam" class="btn btn-sm btn-outline-secondary mb-3">← 返回选择</a>
 {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
 <div class="card shadow p-3">
 <form method="post">
@@ -51,13 +19,13 @@ def create_exam_page():
       <label class="me-3"><input type="checkbox" name="qtypes" value="single" checked> 单选</label>
       <label class="me-3"><input type="checkbox" name="qtypes" value="multiple" checked> 多选</label>
       <label class="me-3"><input type="checkbox" name="qtypes" value="fill"> 填空</label>
+      <label class="me-3"><input type="checkbox" name="qtypes" value="subjective"> 主观题</label>
     </div></div>
+  <div class="mb-3 form-check">
+    <input type="checkbox" class="form-check-input" name="save_to_bank" value="1" id="saveBank">
+    <label class="form-check-label" for="saveBank">同时存入题库（供后续难度配比出卷复用）</label>
+  </div>
+  {% include "teacher/_exam_time_fields.html" %}
   <button type="submit" class="btn btn-primary w-100">生成试卷</button>
 </form></div>
 {% endblock %}
-```
-
-## 验收标准
-- 教师登录后点仪表盘的"创建试卷"按钮 → 跳转到 `/teacher/create_exam`
-- 页面显示：标题输入框 + 数量下拉 + 难易度 radio + 题型 checkbox + 生成按钮
-- 填好参数点"生成" → 等待 5-15 秒 → 自动跳回仪表盘 → 看到新试卷出现

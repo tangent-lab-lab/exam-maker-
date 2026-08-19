@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>🏷️ 知识点管理</h2>
+<a href="/teacher/dashboard" class="btn btn-sm btn-outline-secondary mb-3">← 返回仪表盘</a>
+
+<!-- 新建知识点 -->
+<div class="card mb-4"><div class="card-body">
+  <form method="post" action="/teacher/knowledge_points/create" class="row g-2">
+    <div class="col-8"><input class="form-control" name="name" placeholder="输入知识点名称，如：一元二次方程" required></div>
+    <div class="col-4"><button type="submit" class="btn btn-primary w-100">添加</button></div>
+  </form>
+</div></div>
+
+<!-- 知识点列表 -->
+{% if kps %}
+<table class="table table-bordered bg-white">
+  <thead><tr><th>名称</th><th style="width:200px">操作</th></tr></thead>
+  <tbody>
+  {% for kp in kps %}
+  <tr>
+    <td>
+      <span class="me-2" id="kp-name-{{ kp.id }}">{{ kp.name }}</span>
+      <form method="post" action="/teacher/knowledge_points/{{ kp.id }}/edit" class="d-none" id="kp-edit-{{ kp.id }}">
+        <input class="form-control form-control-sm d-inline w-50" name="name" value="{{ kp.name }}">
+        <button type="submit" class="btn btn-sm btn-success">保存</button>
+      </form>
+    </td>
+    <td>
+      <button class="btn btn-sm btn-outline-warning" onclick="document.getElementById('kp-name-{{ kp.id }}').classList.add('d-none');document.getElementById('kp-edit-{{ kp.id }}').classList.remove('d-none')">编辑</button>
+      <form method="post" action="/teacher/knowledge_points/{{ kp.id }}/delete" style="display:inline"
+            onsubmit="return confirm('删除知识点「{{ kp.name }}」将同时取消所有题目与该知识点的关联，确定删除？')">
+        <button class="btn btn-sm btn-outline-danger">删除</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}<p>暂无知识点，请先添加。</p>{% endif %}
+{% endblock %}

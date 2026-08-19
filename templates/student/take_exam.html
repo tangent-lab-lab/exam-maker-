@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ exam.title }}</h2>
+
+{% if not_started %}
+<div class="alert alert-warning text-center py-5">
+  <h4>⏳ 考试尚未开始</h4>
+  <p>开始时间：{{ exam.start_time.strftime('%Y-%m-%d %H:%M') }}</p>
+  <a href="/student/dashboard" class="btn btn-secondary">返回试卷列表</a>
+</div>
+
+{% elif ended %}
+<div class="alert alert-danger text-center py-5">
+  <h4>⌛ 考试已结束</h4>
+  <p>该试卷已过答题时间，无法提交。</p>
+  <a href="/student/dashboard" class="btn btn-secondary">返回试卷列表</a>
+</div>
+
+{% else %}
+{% if countdown_seconds is not none %}
+<div class="alert alert-info text-center" id="countdown-box">
+  ⏱️ 剩余时间：<strong id="countdown">{{ countdown_seconds // 60 }}:{{ '%02d' % (countdown_seconds % 60) }}</strong>
+</div>
+{% endif %}
+
+<form method="post" action="/student/exam/{{ exam.id }}/submit" id="exam-form">
+  {% for q in questions %}
+  {% set q_idx = loop.index0 %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <h6>{{ loop.index }}. {{ q.question }}
+        <span class="badge bg-secondary">{{ q.type }}</span>
+        {% if q.difficulty %}<span class="badge bg-info">难度 {{ q.difficulty }}</span>{% endif %}
+      </h6>
+      {% if q.type == 'single' and q.options %}
+        {% for opt in q.options %}
+        <div class="form-check"><input class="form-check-input" type="radio" name="q{{ q_idx }}" value="{{ opt }}" required>
+          <label class="form-check-label">{{ opt }}</label></div>
+        {% endfor %}
+      {% elif q.type == 'multiple' and q.options %}
+        {% for opt in q.options %}
+        <div class="form-check"><input class="form-check-input" type="checkbox" name="q{{ q_idx }}" value="{{ opt }}">
+          <label class="form-check-label">{{ opt }}</label></div>
+        {% endfor %}
+      {% elif q.type == 'subjective' %}
+        <textarea class="form-control" name="q{{ q_idx }}" rows="4" placeholder="请输入你的答案" required></textarea>
+      {% else %}
+        <input class="form-control" name="q{{ q_idx }}" placeholder="请输入答案" required>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-success btn-lg w-100">交卷</button>
+</form>
+{% endif %}
+
+{% if countdown_seconds is not none %}
+<script>
+(function () {
+  var remain = {{ countdown_seconds }};
+  var el = document.getElementById("countdown");
+  function fmt(s) {
+    var m = Math.floor(s / 60), sec = s % 60;
+    return m + ":" + (sec < 10 ? "0" + sec : sec);
+  }
+  var timer = setInterval(function () {
+    remain -= 1;
+    if (remain <= 0) {
+      clearInterval(timer);
+      document.getElementById("exam-form").submit();
+      return;
+    }
+    el.textContent = fmt(remain);
+  }, 1000);
+})();
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>🏫 班级管理</h2>
+<a href="/teacher/dashboard" class="btn btn-sm btn-outline-secondary mb-3">← 返回仪表盘</a>
+
+<!-- 创建班级 -->
+<div class="card shadow p-3 mb-4">
+  <h5>创建班级</h5>
+  <form method="post" action="/teacher/classes/create" class="row g-2 align-items-end">
+    <div class="col-md-4">
+      <label class="form-label">班级名称</label>
+      <input class="form-control" name="name" required placeholder="如 高一(3)班">
+    </div>
+    <div class="col-md-5">
+      <label class="form-label">描述（可选）</label>
+      <input class="form-control" name="description" placeholder="如 2026 届物理提高班">
+    </div>
+    <div class="col-md-3">
+      <button type="submit" class="btn btn-primary w-100">创建班级</button>
+    </div>
+  </form>
+</div>
+
+<!-- 班级列表 -->
+<h4>我的班级</h4>
+{% if classes %}
+<table class="table table-bordered bg-white">
+  <thead><tr><th>班级名称</th><th>描述</th><th>学生人数</th><th>邀请码</th><th>创建时间</th><th>操作</th></tr></thead>
+  <tbody>{% for c, cnt in classes %}
+    <tr>
+      <td>{{ c.name }}</td>
+      <td>{{ c.description or '-' }}</td>
+      <td>{{ cnt }}</td>
+      <td><code>{{ c.invite_code }}</code></td>
+      <td>{{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td><a href="/teacher/classes/{{ c.id }}" class="btn btn-sm btn-outline-primary">查看详情</a></td>
+    </tr>
+  {% endfor %}</tbody>
+</table>
+{% else %}<p>还没有创建任何班级。</p>{% endif %}
+{% endblock %}

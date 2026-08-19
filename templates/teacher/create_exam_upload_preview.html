@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>📤 解析预览 — {{ title }}</h2>
+<div class="alert alert-info">AI 解析出 <strong>{{ questions|length }}</strong> 道题目，请确认后保存。</div>
+
+{% for q in questions %}
+<div class="card mb-2">
+  <div class="card-body">
+    <p><strong>{{ loop.index }}. {{ q.question }}</strong>
+      <span class="badge bg-secondary">{{ q.type }}</span>
+      <span class="badge bg-info">难度 {{ q.difficulty }}</span></p>
+    {% if q.options %}
+    <ul>{% for opt in q.options %}<li>{{ opt }}</li>{% endfor %}</ul>
+    {% endif %}
+    <p class="text-success small">答案：{{ q.answer }}</p>
+  </div>
+</div>
+{% endfor %}
+
+<form method="post" class="d-flex gap-2">
+  <button formaction="/teacher/create_exam/upload/confirm" class="btn btn-success">✓ 确认保存</button>
+  <button formaction="/teacher/create_exam/upload/cancel" class="btn btn-outline-danger">✗ 取消</button>
+</form>
+{% endblock %}

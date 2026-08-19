@@ -5,7 +5,7 @@
 
 ## 对应 Spec 章节
 
-三、数据模型（User 表）/ 一、认证
+三、数据模型（User 表）
 
 ## 需要修改的文件
 
@@ -40,8 +40,6 @@ class User(db.Model, UserMixin):
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 ```
-
-### Step 3: 更新 `requirements.txt`，确认已有 `werkzeug` 相关依赖（flask 自带，无需额外添加）
 
 ## 验收标准
 - `python -c "from app import db, User; print(User.__tablename__)"` 输出 `users`

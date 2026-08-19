@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>⚖️ 难度配比出卷</h2>
+<a href="/teacher/create_exam" class="btn btn-sm btn-outline-secondary mb-3">← 返回选择</a>
+
+{% if available == 0 %}
+<div class="alert alert-warning">题库中还没有题目。请先通过 <a href="/teacher/create_exam/ai">AI 出卷</a>（勾选"存入题库"）或 <a href="/teacher/create_exam/upload">手动上传</a> 来添加题目。</div>
+{% endif %}
+
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+
+<div class="card shadow p-3">
+<form method="post">
+  <div class="mb-3"><label class="form-label">试卷标题</label><input class="form-control" name="title" required></div>
+
+  <div class="mb-3"><label class="form-label">总题数</label>
+    <select class="form-select" name="total">
+      <option value="5">5 题</option><option value="10" selected>10 题</option>
+      <option value="15">15 题</option><option value="20">20 题</option>
+      <option value="30">30 题</option>
+    </select>
+  </div>
+
+  <div class="mb-3"><label class="form-label">题型筛选</label>
+    <div>
+      <label class="me-3"><input type="checkbox" name="qtypes" value="single" checked> 单选</label>
+      <label class="me-3"><input type="checkbox" name="qtypes" value="multiple" checked> 多选</label>
+      <label class="me-3"><input type="checkbox" name="qtypes" value="fill"> 填空</label>
+      <label class="me-3"><input type="checkbox" name="qtypes" value="subjective"> 主观题</label>
+    </div>
+    <small class="text-muted">只勾选需要的题型，题库中该题型的题目才能被抽取</small>
+  </div>
+
+  <div class="mb-3"><label class="form-label">难度比例 — 简单 : 中等 : 困难</label>
+    <div class="row g-2">
+      <div class="col-4"><input class="form-control" type="number" name="ratio_easy" value="3" min="0" max="10">
+        <small class="text-muted">简单（难度 1-2）</small></div>
+      <div class="col-4"><input class="form-control" type="number" name="ratio_medium" value="5" min="0" max="10">
+        <small class="text-muted">中等（难度 3）</small></div>
+      <div class="col-4"><input class="form-control" type="number" name="ratio_hard" value="2" min="0" max="10">
+        <small class="text-muted">困难（难度 4-5）</small></div>
+    </div>
+    <small class="text-muted">例如 3:5:2 表示简单题占 30%、中等题占 50%、困难题占 20%</small>
+  </div>
+
+  {% if kps %}
+  <div class="mb-3"><label class="form-label">知识点筛选（可选）</label>
+    <select class="form-select" name="kp_filter">
+      <option value="">全部知识点</option>
+      {% for kp in kps %}
+      <option value="{{ kp.id }}">{{ kp.name }}</option>
+      {% endfor %}
+    </select>
+    <small class="text-muted">仅从关联了该知识点的题目中抽取</small>
+  </div>
+  {% endif %}
+
+  {% include "teacher/_exam_time_fields.html" %}
+  <button type="submit" class="btn btn-info w-100" {% if available == 0 %}disabled{% endif %}>按比例生成试卷</button>
+</form></div>
+{% endblock %}

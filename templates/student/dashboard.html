@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>可答试卷</h2>
+<div class="mb-3">
+  <a href="/student/join_class" class="btn btn-outline-primary">➕ 加入班级</a>
+</div>
+{% if exams %}
+<table class="table table-bordered bg-white">
+  <thead><tr><th>试卷名称</th><th>出卷教师</th><th>出卷方式</th><th>考试时间</th><th>操作</th></tr></thead>
+  <tbody>{% for e in exams %}
+    <tr><td>{{ e.title }}</td><td>{{ e.teacher.username }}</td>
+      <td><span class="badge bg-secondary">{{ e.creation_mode }}</span></td>
+      <td>
+        {% if e.start_time or e.end_time %}
+          {{ e.start_time.strftime('%m-%d %H:%M') if e.start_time else '不限' }} ~
+          {{ e.end_time.strftime('%m-%d %H:%M') if e.end_time else '不限' }}
+        {% else %}不限时{% endif %}
+        {% if e.duration_minutes %}<small class="text-muted">({{ e.duration_minutes }}分钟)</small>{% endif %}
+      </td>
+      <td><a href="/student/exam/{{ e.id }}" class="btn btn-sm btn-primary">进入答题</a></td></tr>
+  {% endfor %}</tbody>
+</table>
+{% else %}<p>暂无可用试卷。</p>{% endif %}
+{% endblock %}

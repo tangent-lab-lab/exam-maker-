@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>个人中心</h2>
+
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+{% if success %}<div class="alert alert-success">{{ success }}</div>{% endif %}
+
+<div class="row mt-3">
+  <div class="col-lg-6">
+    <!-- 基本信息 -->
+    <div class="card shadow p-3 mb-4">
+      <h5>基本信息</h5>
+      <table class="table">
+        <tr><th>用户名</th><td>{{ user.username }}</td></tr>
+        <tr><th>角色</th><td>{{ '教师' if user.role == 'teacher' else '学生' }}</td></tr>
+        <tr><th>注册时间</th>
+          <td>{{ user.created_at.strftime('%Y-%m-%d %H:%M') if user.created_at else '-' }}</td></tr>
+      </table>
+    </div>
+
+    <!-- 编辑资料 -->
+    <div class="card shadow p-3 mb-4">
+      <h5>编辑资料</h5>
+      <form method="post">
+        <input type="hidden" name="action" value="update_info">
+        <div class="mb-3">
+          <label class="form-label">邮箱</label>
+          <input class="form-control" type="email" name="email" value="{{ user.email or '' }}" placeholder="请输入邮箱">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">真实姓名</label>
+          <input class="form-control" type="text" name="real_name" value="{{ user.real_name or '' }}" placeholder="请输入真实姓名">
+        </div>
+        <button type="submit" class="btn btn-primary">保存资料</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <!-- 修改密码 -->
+    <div class="card shadow p-3">
+      <h5>修改密码</h5>
+      <form method="post">
+        <input type="hidden" name="action" value="change_password">
+        <div class="mb-3">
+          <label class="form-label">旧密码</label>
+          <input class="form-control" type="password" name="old_password" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">新密码</label>
+          <input class="form-control" type="password" name="new_password" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">确认新密码</label>
+          <input class="form-control" type="password" name="confirm_password" required>
+        </div>
+        <button type="submit" class="btn btn-warning">修改密码</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+<div class="mb-3">
+  <label class="form-label">考试时间设置（可选）</label>
+  <div class="row g-2">
+    <div class="col-md-4">
+      <label class="form-label small">开始时间</label>
+      <input class="form-control" type="datetime-local" name="start_time">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label small">结束时间</label>
+      <input class="form-control" type="datetime-local" name="end_time">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label small">考试时长（分钟）</label>
+      <input class="form-control" type="number" name="duration_minutes" min="1" placeholder="如 60">
+    </div>
+  </div>
+  <small class="text-muted">不填则不限制时间；设置开始/结束时间后，学生需在时段内答题；设置时长后答题页会倒计时并到时自动交卷。</small>
+</div>

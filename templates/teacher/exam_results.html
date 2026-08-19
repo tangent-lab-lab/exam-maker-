@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ exam.title }} — 学生成绩</h2>
+<a href="/teacher/dashboard" class="btn btn-sm btn-outline-secondary mb-3">← 返回仪表盘</a>
+<p class="text-muted">出卷方式：{{ exam.creation_mode }}</p>
+{% if subs %}
+<table class="table table-bordered bg-white">
+  <thead><tr><th>学生</th><th>得分</th><th>满分</th><th>提交时间</th></tr></thead>
+  <tbody>{% for s in subs %}
+    <tr><td>{{ s.student.username }}</td><td>{{ s.score }}</td><td>100</td>
+      <td>{{ s.submitted_at.strftime('%Y-%m-%d %H:%M') if s.submitted_at else '-' }}</td></tr>
+  {% endfor %}</tbody>
+</table>
+{% else %}<p>暂无学生提交。</p>{% endif %}
+{% endblock %}

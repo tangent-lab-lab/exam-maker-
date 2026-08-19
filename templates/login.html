@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow"><div class="card-body">
+  <h3 class="text-center mb-3">登录</h3>
+  {% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+  <form method="post">
+    <input class="form-control mb-2" name="username" placeholder="用户名" required>
+    <input class="form-control mb-2" name="password" type="password" placeholder="密码" required>
+    <button class="btn btn-primary w-100" type="submit">登录</button>
+  </form>
+  <p class="mt-2 text-center"><a href="{{ url_for('register_page') }}">没有账号？去注册</a></p>
+</div></div>
+{% endblock %}

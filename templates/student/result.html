@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ exam.title }} — 成绩</h2>
+<div class="alert alert-info text-center"><h1>{{ sub.score }} / 100</h1></div>
+{% for q in questions %}
+{% set idx = loop.index0 %}
+{% set ans = answers.get(idx|string, '') %}
+{% set g = grading.get(idx|string, {}) %}
+<div class="card mb-2">
+  <div class="card-body">
+    <p><strong>{{ loop.index }}. {{ q.question }}</strong>
+      <span class="badge bg-secondary">{{ q.type }}</span></p>
+    {% if q.type == 'subjective' %}
+      <p>你的答案：<span class="text-primary">{{ ans if ans is string else ans|join(', ') }}</span></p>
+      <p class="text-success">参考答案：{{ q.answer if q.answer is string else q.answer|join(', ') }}</p>
+      <hr>
+      <p>🤖 AI 批改得分：<strong>{{ g.ai_score if g.ai_score is defined else '-' }}</strong></p>
+      <p class="text-muted">AI 评分理由：{{ g.ai_reason or '-' }}</p>
+      {% if g.manual_score is defined %}
+      <p>👨‍🏫 人工矫正得分：<strong class="text-danger">{{ g.manual_score }}</strong></p>
+      {% if g.manual_reason %}<p class="text-muted">矫正理由：{{ g.manual_reason }}</p>{% endif %}
+      {% endif %}
+    {% else %}
+      <p>你的答案：
+        <span class="{% if q.answer == ans or (q.answer is iterable and q.answer|join(',') == ans|join(',')) %}text-success{% else %}text-danger{% endif %}">
+          {{ ans if ans is string else ans|join(', ') }}
+        </span>
+      </p>
+      <p class="text-success">正确答案：{{ q.answer if q.answer is string else q.answer|join(', ') }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+<a href="/student/dashboard" class="btn btn-primary">返回试卷列表</a>
+{% endblock %}

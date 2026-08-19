@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>加入班级</h2>
+<a href="/student/dashboard" class="btn btn-sm btn-outline-secondary mb-3">← 返回仪表盘</a>
+
+{% if error %}<div class="alert alert-danger">{{ error }}</div>{% endif %}
+{% if success %}<div class="alert alert-success">{{ success }}</div>{% endif %}
+
+<div class="card shadow p-3 mb-4">
+  <form method="post">
+    <div class="mb-3">
+      <label class="form-label">请输入班级邀请码</label>
+      <input class="form-control" name="invite_code" required placeholder="如 A1B2C3">
+    </div>
+    <button type="submit" class="btn btn-primary w-100">加入班级</button>
+  </form>
+</div>
+
+<h4>我的班级</h4>
+{% if my_classes %}
+<table class="table table-bordered bg-white">
+  <thead><tr><th>班级名称</th><th>任课教师</th><th>描述</th></tr></thead>
+  <tbody>{% for c in my_classes %}
+    <tr><td>{{ c.name }}</td><td>{{ c.teacher.username }}</td><td>{{ c.description or '-' }}</td></tr>
+  {% endfor %}</tbody>
+</table>
+{% else %}<p class="text-muted">你还没有加入任何班级。</p>{% endif %}
+{% endblock %}

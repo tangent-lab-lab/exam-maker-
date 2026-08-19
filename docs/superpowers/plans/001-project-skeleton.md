@@ -1,7 +1,7 @@
 # Plan 001: 项目骨架 — 依赖 + app 入口 + 基础模板
 
 > **依赖**: 无
-> **预估改动**: ~22 行（全部新增）
+> **预估改动**: ~25 行（全部新增）
 
 ## 对应 Spec 章节
 
@@ -10,7 +10,7 @@
 ## 需要创建的文件
 
 1. `exam_maker/requirements.txt`
-2. `exam_maker/.env`
+2. `exam_maker/.env.example`
 3. `exam_maker/app.py`（Flask 入口 + 配置 + DB 初始化）
 4. `exam_maker/templates/base.html`
 5. `exam_maker/static/style.css`
@@ -25,14 +25,19 @@ flask-sqlalchemy==3.1.*
 flask-login==0.6.*
 httpx==0.28.*
 python-dotenv==1.1.*
+python-docx==1.1.*
+PyPDF2==3.0.*
 ```
 
-### Step 2: 创建 `.env`
+> `python-docx` 用于解析 Word 文件，`PyPDF2` 用于解析 PDF 文件，两者服务于手动上传出卷功能（Plan 008）。
+
+### Step 2: 创建 `.env.example`
 
 ```
-LLM_BASE_URL=https://api.deepseek.com/v1
+LLM_BASE_URL=https://api.deepseek.com
 LLM_API_KEY=sk-your-key
 LLM_MODEL=deepseek-chat
+SECRET_KEY=change-me-in-production
 ```
 
 ### Step 3: 创建 `app.py`
@@ -71,7 +76,7 @@ if __name__ == "__main__":
   <a class="navbar-brand" href="/">📝 Exam-Maker</a>
   <div class="navbar-nav ms-auto">
     {% if current_user.is_authenticated %}
-      <span class="nav-link text-white">{{ current_user.username }}</span>
+      <span class="nav-link text-white">{{ current_user.username }}({{ current_user.role }})</span>
       <a class="nav-link" href="{{ url_for('logout') }}">登出</a>
     {% endif %}
   </div>
@@ -85,7 +90,8 @@ if __name__ == "__main__":
 
 ```css
 body { background: #f5f7fa; }
-.card { max-width: 500px; margin: 80px auto; }
+.card { max-width: 600px; margin: 80px auto; }
+.card-wide { max-width: 900px; margin: 40px auto; }
 ```
 
 ## 验收标准

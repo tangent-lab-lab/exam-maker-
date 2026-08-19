@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>阅卷：{{ exam.title }}</h2>
+<p class="text-muted">
+  学生：<strong>{{ sub.student.real_name or sub.student.username }}</strong>
+  （用户名：{{ sub.student.username }}）· 当前得分：<strong class="text-danger">{{ sub.score }}</strong> / 100
+</p>
+<a href="/teacher/exam/{{ exam.id }}/grade" class="btn btn-sm btn-outline-secondary mb-3">← 返回阅卷列表</a>
+
+<form method="post">
+  {% for q in questions %}
+  {% set idx = loop.index0 %}
+  {% set ans = answers.get(idx|string, '') %}
+  {% set g = grading.get(idx|string, {}) %}
+  <div class="card mb-3">
+    <div class="card-body">
+      <p><strong>{{ loop.index }}. {{ q.question }}</strong>
+        <span class="badge bg-secondary">{{ q.type }}</span></p>
+      <p>学生答案：<span class="text-primary">{{ ans if ans is string else ans|join(', ') }}</span></p>
+      <p class="text-success">参考答案：{{ q.answer if q.answer is string else q.answer|join(', ') }}</p>
+
+      {% if q.type == 'subjective' %}
+      <hr>
+      <div class="row g-2">
+        <div class="col-md-6">
+          <p>🤖 AI 批改得分：<strong>{{ g.ai_score if g.ai_score is defined else '-' }}</strong> / {{ per_q }}</p>
+          <p class="text-muted">AI 评分理由：{{ g.ai_reason or '-' }}</p>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">👨‍🏫 人工矫正得分（留空则沿用 AI 得分）</label>
+          <input class="form-control" type="number" name="manual_score_{{ idx }}" min="0" max="{{ per_q }}"
+                 value="{{ g.manual_score if g.manual_score is defined else '' }}" placeholder="0 ~ {{ per_q }}">
+          <label class="form-label mt-2">矫正理由</label>
+          <textarea class="form-control" name="manual_reason_{{ idx }}" rows="2"
+                    placeholder="可选">{{ g.manual_reason or '' }}</textarea>
+        </div>
+      </div>
+      {% else %}
+      <p>
+        判定：
+        {% if q.answer == ans or (q.answer is iterable and q.answer|join(',') == ans|join(',')) %}
+          <span class="text-success">正确（+{{ per_q }}）</span>
+        {% else %}
+          <span class="text-danger">错误</span>
+        {% endif %}
+      </p>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <button type="submit" class="btn btn-success btn-lg w-100">保存矫正并更新成绩</button>
+</form>
+{% endblock %}

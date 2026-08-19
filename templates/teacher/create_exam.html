@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>选择出卷方式</h2>
+<div class="row mt-4">
+  <div class="col-md-4">
+    <div class="card text-center p-4 shadow">
+      <h3>🤖</h3><h5>AI 出卷</h5>
+      <p class="text-muted">告诉 AI 你的需求，秒出试卷</p>
+      <a href="/teacher/create_exam/ai" class="btn btn-primary">开始</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center p-4 shadow">
+      <h3>📤</h3><h5>手动上传</h5>
+      <p class="text-muted">上传 Word/PDF/TXT，自动解析入库</p>
+      <a href="/teacher/create_exam/upload" class="btn btn-success">开始</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-center p-4 shadow">
+      <h3>⚖️</h3><h5>难度配比</h5>
+      <p class="text-muted">指定难度比例，从题库自动抽取</p>
+      <a href="/teacher/create_exam/ratio" class="btn btn-info">开始</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

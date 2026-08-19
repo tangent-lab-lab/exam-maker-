@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>📦 题库管理</h2>
+<a href="/teacher/dashboard" class="btn btn-sm btn-outline-secondary mb-3">← 返回仪表盘</a>
+
+<!-- Filter bar -->
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-3">
+    <select class="form-select form-select-sm" name="kp">
+      <option value="">全部知识点</option>
+      {% for kp in kps %}
+      <option value="{{ kp.id }}" {% if kp_filter == kp.id %}selected{% endif %}>{{ kp.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select class="form-select form-select-sm" name="difficulty">
+      <option value="">全部难度</option>
+      {% for d in range(1,6) %}
+      <option value="{{ d }}" {% if difficulty_filter == d %}selected{% endif %}>难度 {{ d }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select class="form-select form-select-sm" name="type">
+      <option value="">全部题型</option>
+      <option value="single" {% if type_filter == 'single' %}selected{% endif %}>单选</option>
+      <option value="multiple" {% if type_filter == 'multiple' %}selected{% endif %}>多选</option>
+      <option value="fill" {% if type_filter == 'fill' %}selected{% endif %}>填空</option>
+      <option value="subjective" {% if type_filter == 'subjective' %}selected{% endif %}>主观题</option>
+    </select>
+  </div>
+  <div class="col-md-2"><button type="submit" class="btn btn-sm btn-outline-primary w-100">筛选</button></div>
+</form>
+
+{% if questions %}
+{% for q, q_kps in questions %}
+<div class="card mb-2">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start">
+      <div>
+        <strong>{{ q.question_text | truncate(80) }}</strong>
+        <div class="mt-1">
+          <span class="badge bg-secondary">{{ q.type }}</span>
+          <span class="badge bg-info">难度 {{ q.difficulty }}</span>
+          <span class="badge bg-light text-dark">{{ q.source }}</span>
+          {% for kp in q_kps %}<span class="badge bg-warning text-dark">{{ kp.name }}</span>{% endfor %}
+        </div>
+        <small class="text-muted">答案：{{ q.answer | truncate(60) }}</small>
+      </div>
+      <div class="btn-group btn-group-sm">
+        <button class="btn btn-outline-warning" onclick="toggleEdit({{ q.id }})">编辑</button>
+        <form method="post" action="/teacher/question/{{ q.id }}/delete" style="display:inline"
+              onsubmit="return confirm('确定删除此题？')">
+          <button class="btn btn-outline-danger">删除</button>
+        </form>
+      </div>
+    </div>
+    <!-- Edit form (hidden by default) -->
+    <form method="post" action="/teacher/question/{{ q.id }}/edit" class="mt-2 d-none" id="edit-{{ q.id }}">
+      <textarea class="form-control form-control-sm mb-1" name="question_text" rows="2">{{ q.question_text }}</textarea>
+      <div class="row g-1 mb-1">
+        <div class="col-3"><select class="form-select form-select-sm" name="type">
+          <option value="single" {% if q.type=='single' %}selected{% endif %}>单选</option>
+          <option value="multiple" {% if q.type=='multiple' %}selected{% endif %}>多选</option>
+          <option value="fill" {% if q.type=='fill' %}selected{% endif %}>填空</option>
+          <option value="subjective" {% if q.type=='subjective' %}selected{% endif %}>主观题</option>
+        </select></div>
+        <div class="col-2"><select class="form-select form-select-sm" name="difficulty">
+          {% for d in range(1,6) %}<option value="{{ d }}" {% if q.difficulty==d %}selected{% endif %}>{{ d }}</option>{% endfor %}
+        </select></div>
+        <div class="col-3"><input class="form-control form-control-sm" name="answer" value="{{ q.answer }}"></div>
+        <div class="col-4"><input class="form-control form-control-sm" name="options_json" value="{{ q.options_json }}" placeholder="options JSON"></div>
+      </div>
+      <div class="mb-1">
+        {% for kp in kps %}
+        <label class="me-2 small"><input type="checkbox" name="kp_ids" value="{{ kp.id }}"
+          {% if kp in q_kps %}checked{% endif %}> {{ kp.name }}</label>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-sm btn-success">保存</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleEdit({{ q.id }})">取消</button>
+    </form>
+  </div>
+</div>
+{% endfor %}
+{% else %}<p>题库为空。请先通过 AI 出卷（勾选"存入题库"）或手动上传来添加题目。</p>{% endif %}
+
+<script>
+function toggleEdit(id) { document.getElementById('edit-' + id).classList.toggle('d-none'); }
+</script>
+{% endblock %}
