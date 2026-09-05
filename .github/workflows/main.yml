@@ -1,18 +1,25 @@
 name: CI
-on: [push]
-  - PR 上述语句？
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - run: pip install -r requirements.txt
-    - run: pvtest -q
-    - 看红灯——是——不是——少了一步？
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: pytest -q
 
-deploy:
-  runs-on: ubuntu-latest
-  steps:
-  - uses: actions/checkout@v4
-    - run: ./deploy.sh
-    - 谁都能生产？
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  # 这是保命符，测试不过绝不部署
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy script
+        run: ./deploy.sh
