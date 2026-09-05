@@ -1,36 +1,18 @@
 name: CI
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push]
+  - PR 上述语句？
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. 拉取代码
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - run: pip install -r requirements.txt
+    - run: pvtest -q
+    - 看红灯——是——不是——少了一步？
 
-      # 2. 设置 Python 环境
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      # 3. 安装依赖（修正了之前的拼写错误）
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # 4. 简单语法检查（确保 app.py 没有明显错误）
-      - name: Check syntax
-        run: python -m py_compile app.py
-
-      # （可选）如果你想启动应用测试，可以取消下面注释
-      # - name: Start app test
-      #   run: python app.py & sleep 2 && curl -f http://localhost:5000
+deploy:
+  runs-on: ubuntu-latest
+  steps:
+  - uses: actions/checkout@v4
+    - run: ./deploy.sh
+    - 谁都能生产？
